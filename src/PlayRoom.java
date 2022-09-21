@@ -6,7 +6,7 @@ public class PlayRoom {
     private static int antCount=5;
     public static void main(String[] args) {
         startGame();
-        //output!
+        //print
         System.out.println("max time is: " + maxTime);
         System.out.println("min time is: " + minTime);
     }
@@ -16,6 +16,7 @@ public class PlayRoom {
             CreepingGame cg = new CreepingGame(i);
             time = cg.playGame();
             updateRecord(time);
+            System.out.println("第"+i+"次耗时："+time);
         }
     }
     public static void updateRecord(int currentTime){

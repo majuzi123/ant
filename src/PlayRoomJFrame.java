@@ -2,43 +2,58 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class PlayRoomJFrame{
-
+public class PlayRoomJFrame extends JFrame{
     public static void main(String[] args) {
+        new PlayRoomJFrame();
+    }
+    public PlayRoomJFrame(){
 
         JFrame jFrame = new JFrame("Ant Creeping");
-
-        jFrame.setSize(800, 500);
+        jFrame.setSize(800, 400);
         jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
         jFrame.setLayout(new BorderLayout());
 
+        AtomicInteger mask= new AtomicInteger();
+        JLabel input=new JLabel("Input:");
+        input.setSize(20,55);
+        Font font = new Font("Comic Sans MS",Font.PLAIN,20);
+        input.setFont(font);
+        JTextField maskText=new JTextField(18);
+        maskText.setPreferredSize(new Dimension(20,28));
+
         JButton button1 = new JButton("Start");
-        button1.setSize(50, 30);
-        JButton button2 = new JButton("Reset");
-        button2.setSize(50, 30);
+        button1.setSize(100, 55);
+        button1.setFont(font);
+        button1.setBackground((new Color(247, 238, 214, 255)));
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground((new Color(0, 127, 127, 255)));
+        buttonPanel.setBackground((new Color(160, 148, 231, 255)));
         buttonPanel.setLayout(new FlowLayout());
+        buttonPanel.add(input);
+        buttonPanel.add(maskText);
         buttonPanel.add(button1);
-        buttonPanel.add(button2);
 
-        jFrame.add(buttonPanel, BorderLayout.NORTH);
-
-        CreepingGame cg = new CreepingGame(4);
-
-
-        CreepPanel creepPanel = new CreepPanel(cg);
-        jFrame.add(creepPanel, BorderLayout.CENTER);
-
+        jFrame.add(buttonPanel,BorderLayout.NORTH);
         jFrame.setVisible(true);
 
-        button1.addActionListener(event -> {
-            Thread t = new Thread(creepPanel);
-            t.start();
-        });
+        maskText.addActionListener(event ->{
+                    int temp=Integer.parseInt(maskText.getText());
+                    mask.set(temp);
+                    maskText.setText(Integer.toString(mask.get()));
+                    CreepingGame cg = new CreepingGame(mask.get());
+                    CreepPanel creepPanel = new CreepPanel(cg);
+                    cg.init();
+                    jFrame.add(creepPanel, BorderLayout.CENTER);
+
+                    button1.addActionListener(event2 -> {
+                        Thread t = new Thread(creepPanel);
+                        t.start();
+                    });
+                }
+        );
+
     }
 
 }
@@ -46,7 +61,7 @@ public class PlayRoomJFrame{
 class CreepPanel extends JPanel implements Runnable {
 
     private CreepingGame cg;
-    private int y = 225;
+    private int y = 195;
     private List<Color> antColor = new ArrayList<>();
     private int[] r = {240, 0, 250, 0, 0};
     private int[] g = {0, 240, 230, 240, 0};
@@ -66,7 +81,7 @@ class CreepPanel extends JPanel implements Runnable {
     public void paint(Graphics g) {
         super.paint(g);
         g.setColor(new Color(0, 0, 0));
-        g.fillRect(250,255,320,5);
+        g.fillRect(250,225,320,5);
         List<Ant> ants = cg.getAnts();
         for (int i = 0; i < ants.size(); i++) {
             if (ants.get(i).getPosition() > 0 && ants.get(i).getPosition() <300) {
@@ -79,6 +94,8 @@ class CreepPanel extends JPanel implements Runnable {
     @Override
     public void run() {
         JLabel textTimeLabel = new JLabel();
+        Font font = new Font("Comic Sans MS",Font.PLAIN,20);
+        textTimeLabel.setFont(font);
         this.add(textTimeLabel);
         while (!cg.isFinished()) {
             cg.drivingGame();

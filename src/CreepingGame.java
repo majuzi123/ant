@@ -7,23 +7,24 @@ public class CreepingGame {
     private Stick stick;
     private List<Ant> ants = new ArrayList<>();
     private int antCount=5;
-    private int[] antPosition = {30, 80, 110, 160, 250};
+    private int[] initialPosition = {30, 80, 110, 160, 250};
 
-    private void init(){
+    public void init(){
         for (int i = 0; i < antCount; i++) {
-            ants.add(new Ant(5, (directionMark >> i) & 1, antPosition[i]));
+            ants.add(new Ant(5, (directionMark >> i) & 1, initialPosition[i]));
         }
         stick = new Stick(300);
         currentTime = 0;
     }
     public CreepingGame(int Mark){
         this.directionMark=Mark;
-        this.init();
     }
     public int playGame(){
+        init();
         while(!isFinished()){
             drivingGame();
         }
+        System.out.println(currentTime);
         return currentTime;
     }
 
@@ -39,25 +40,15 @@ public class CreepingGame {
         for(int i = 0; i < antCount; i++){
             ants.get(i).creeping();
         }
-        judgeCollision();
-        currentTime+=1;
-    }
-
-    public boolean judgeCollision(){
-        boolean flag = true;
-        while (flag) {
-            flag = false;
-            for (int i = 0; i < antCount - 1; i++) {
-                Ant p1 = ants.get(i);
-                Ant p2 = ants.get(i + 1);
-                if (p1.getDirection() == 1 && p2.getDirection() == -1 && p2.getPosition() == p1.getPosition()) {
-                    p1.changeDir();
-                    p2.changeDir();
-                    flag = true;
-                }
+        for(int i=0; i < antCount-1; i++){
+            Ant p1 = ants.get(i);
+            Ant p2 = ants.get(i + 1);
+            if(p1.judgeCollision(p2)){
+                p1.changeDir();
+                p2.changeDir();
             }
         }
-        return flag;
+        updateCurrentTime();
     }
 
     public int getCurrentTime() {
@@ -66,5 +57,8 @@ public class CreepingGame {
 
     public List<Ant> getAnts() {
         return ants;
+    }
+    private void updateCurrentTime(){
+        currentTime+=1;
     }
 }

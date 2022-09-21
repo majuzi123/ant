@@ -35,4 +35,9 @@ public class Ant {
     public void creeping() {
         position = position + direction * speed;
     }
+    public boolean judgeCollision(Ant p2){
+        if(this.getDirection() == 1 && p2.getDirection() == -1 && this.getPosition() == p2.getPosition())
+            return true;
+        return false;
+    }
 }
